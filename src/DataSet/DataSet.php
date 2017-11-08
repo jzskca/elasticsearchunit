@@ -45,6 +45,13 @@ class DataSet {
 	protected $connection;
 
 	/**
+	 * Wait time between index completion checks, in milliseconds.
+	 *
+	 * @var integer
+	 */
+	protected $retryWait = 100;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Zumba\PHPUnit\Extensions\ElasticSearch\Client\Connector
@@ -74,6 +81,17 @@ class DataSet {
 	 */
 	public function setMappings(array $mappings) {
 		$this->mappings = $mappings;
+		return $this;
+	}
+
+	/**
+	 * Sets the time between index completion checks.
+	 *
+	 * @param integer $wait time to wait, in milliseconds
+	 * @return Zumba\PHPUnit\Extensions\ElasticSearch\DataSet\DataSet
+	 */
+	public function setRetryWait($wait)	{
+		$this->retryWait = $wait;
 		return $this;
 	}
 
@@ -161,7 +179,7 @@ class DataSet {
 					}
 					$response = $this->connection->getConnection()->indices()->stats(compact('index'));
 					$retries++;
-					usleep(100000);
+					usleep($this->retryWait * 1000);
 				} while ($response['indices'][$index]['total']['docs']['count'] != $documents[$index]);
 			}
 		}
