@@ -130,13 +130,14 @@ class DataSet {
 		foreach ($this->fixture as $index => $types) {
 
 			if (!$this->connection->getConnection()->indices()->exists(compact('index'))) {
-				$this->connection->getConnection()->indices()->create(compact('index'));
-			}
-			if (!empty($this->settings[$index])) {
-				$this->defineSettings($index);
-			}
-			if (!empty($this->mappings[$index])) {
-				$this->defineMappings($index);
+				$params = ['index' => $index, 'body' => []];
+				if (!empty($this->settings[$index])) {
+					$params['body']['settings'] = $this->settings[$index];
+				}
+				if (!empty($this->mappings[$index])) {
+					$params['body']['mappings'] = $this->mappings[$index];
+				}
+				$this->connection->getConnection()->indices()->create($params);
 			}
 
 			$documents[$index] = $this->getDocumentCount($index);
