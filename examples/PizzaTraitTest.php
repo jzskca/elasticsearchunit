@@ -3,7 +3,7 @@
 /**
  * @group 5.4
  */
-class PizzaTraitTest extends \PHPUnit_Framework_TestCase {
+class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 	use \Zumba\PHPUnit\Extensions\ElasticSearch\TestTrait;
 
 	const PIZZA_TRAIT_INDEX = 'store';

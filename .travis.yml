@@ -3,12 +3,11 @@ dist: trusty
 
 language: php
 php:
-  - 5.6
   - 7
+jdk: openjdk8
 
 env:
-  - DB=5.0.0 ES_PKG=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.0.0.deb
-  - DB=5.2.1 ES_PKG=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.deb
+  - DB=6.2.4 ES_PKG=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.4.deb
 
 before_install:
   - curl -O $ES_PKG && sudo dpkg -i --force-confnew $(printf 'elasticsearch-%s.deb' $DB)

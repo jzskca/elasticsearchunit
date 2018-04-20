@@ -1,11 +1,11 @@
 ElasticSearchUnit is a PHPUnit extension for test cases that utilize the official ElasticSearch Client as their data source.
 
-[![Build Status](https://travis-ci.org/zumba/elasticsearchunit.svg)](https://travis-ci.org/zumba/elasticsearchunit)
+[![Build Status](https://travis-ci.org/jzskca/elasticsearchunit.svg)](https://travis-ci.org/jzskca/elasticsearchunit)
 
 ## Requirements
 
-* PHP 5.6+
-* ElasticSearch 5.0+
+* PHP 7.0+
+* ElasticSearch 6.0+
 
 ## Testing
 
@@ -70,5 +70,4 @@ ES_TEST_HOST=http://docker:9200 ./bin/phpunit
 
 ## Elasticsearch Version Support
 
-This branch/version is compatible with ElasticSearch 5+. If you are using older versions of ElasticSearch,
-please check the v1.x from this library.
+This branch/version is compatible with ElasticSearch 6+.

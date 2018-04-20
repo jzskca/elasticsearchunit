@@ -2,7 +2,7 @@
 
 use Zumba\PHPUnit\Extensions\ElasticSearch\Client\Connector;
 
-class ConnectorTest extends \PHPUnit_Framework_TestCase {
+class ConnectorTest extends \PHPUnit\Framework\TestCase {
 
 	public function testGeneralConnection() {
 		$clientBuilder = \Elasticsearch\ClientBuilder::create();
