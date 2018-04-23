@@ -19,7 +19,7 @@
 	</testsuites>
 	<filter>
 		<whitelist addUncoveredFilesFromWhitelist="true">
-			<directory>./src/Zumba/PHPUnit</directory>
+			<directory>src</directory>
 		</whitelist>
 	</filter>
 </phpunit>
