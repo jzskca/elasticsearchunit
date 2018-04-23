@@ -90,7 +90,19 @@ class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 						'token_chars' => ['letter', 'digit', 'punctuation', 'symbol', 'whitespace']
 					]
 				]
-			]
+			],
+			'index' => [
+				'number_of_replicas' => 0,
+				'number_of_shards' => 1,
+				'refresh_interval' => '1ms',
+			],
+		],
+		'items' => [
+			'index' => [
+				'number_of_replicas' => 0,
+				'number_of_shards' => 1,
+				'refresh_interval' => '1ms',
+			],
 		]
 	];
 
@@ -111,6 +123,7 @@ class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 			$this->dataSet->setFixture($this->fixture);
 			$this->dataSet->setMappings($this->mappings);
 			$this->dataSet->setSettings($this->settings);
+			$this->dataSet->setRetryWait(1);
 		}
 		return $this->dataSet;
 	}
