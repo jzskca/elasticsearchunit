@@ -18,7 +18,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase {
 			'id' => 1,
 			'body' => ['testfield' => 'testvalue']
 		]);
-		$this->assertTrue($response['created']);
+		$this->assertEquals('created', $response['result']);
 		$this->assertEquals(1, $response['_id']);
 
 		$response = $connection->delete([
@@ -26,7 +26,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase {
 			'type' => 'test',
 			'id' => 1
 		]);
-		$this->assertTrue($response['found']);
+		$this->assertEquals('deleted', $response['result']);
 	}
 
 }

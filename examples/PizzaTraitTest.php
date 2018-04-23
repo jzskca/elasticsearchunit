@@ -6,19 +6,19 @@
 class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 	use \Zumba\PHPUnit\Extensions\ElasticSearch\TestTrait;
 
-	const PIZZA_TRAIT_INDEX = 'store';
-
 	protected $connection;
 
 	protected $dataSet;
 
 	protected $fixture = [
-		self::PIZZA_TRAIT_INDEX => [
-			'items' => [
+		'items' => [
+			'_doc' => [
 				['size' => 'large', 'toppings' => ['cheese', 'ham']],
 				['size' => 'medium', 'toppings' => ['cheese']]
-			],
-			'toppings' => [
+			]
+		],
+		'toppings' => [
+			'_doc' => [
 				[
 					'name' => 'bacon',
 					'cost' => '0.75',
@@ -53,9 +53,8 @@ class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 	];
 
 	protected $mappings = [
-		self::PIZZA_TRAIT_INDEX => [
-			'items' => [],
-			'toppings' => [
+		'toppings' => [
+			'_doc' => [
 				'properties' => [
 					'cost' => ['type' => 'float'],
 					'categories' => [
@@ -71,7 +70,7 @@ class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 	];
 
 	protected $settings = [
-		self::PIZZA_TRAIT_INDEX => [
+		'toppings' => [
 			'analysis' => [
 				'analyzer' => [
 					'AutoCompleteAnalyzer' => [
@@ -117,7 +116,7 @@ class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function testSizesFromFixture() {
-		$params = ['index' => static::PIZZA_TRAIT_INDEX, 'type' => 'items'];
+		$params = ['index' => 'items'];
 		$this->assertEquals(2, $this->getElasticSearchConnector()->getConnection()->search($params)['hits']['total']);
 		$params['body'] = [
 			'query' => [
@@ -130,31 +129,28 @@ class PizzaTraitTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function testNestedSearchSort() {
-		$params = [
-			'index' => static::PIZZA_TRAIT_INDEX,
-			'type' => 'toppings',
-		];
-		$params['body']['query']['bool']['must'][]['term']['categories.name'] = 'meat';
+		$params = ['index' => 'toppings'];
+		$params['body']['query']['nested']['path'] = 'categories';
+		$params['body']['query']['nested']['query']['bool']['must'][]['term']['categories.name'] = 'meat';
 		$params['body']['sort']['categories.display_order'] = [
 			'order' => 'asc',
-			'nested_filter' => [['term' => ['categories.name' => 'meat']]]
 		];
 		$results = $this->getElasticSearchConnector()->getConnection()->search($params);
 		$this->assertEquals(3, $results['hits']['total']);
 		$this->assertEquals(
 			[
-				$this->fixture['store']['toppings'][1],
-				$this->fixture['store']['toppings'][3],
-				$this->fixture['store']['toppings'][0],
+				$this->fixture['toppings']['_doc'][1],
+				$this->fixture['toppings']['_doc'][3],
+				$this->fixture['toppings']['_doc'][0],
 			],
 			array_column($results['hits']['hits'], '_source')
 		);
 	}
 
 	public function testSettings() {
-		$settings = $this->getElasticSearchConnector()->getConnection()->indices()->getSettings(array('index' => static::PIZZA_TRAIT_INDEX))['store']['settings']['index'];
+		$settings = $this->getElasticSearchConnector()->getConnection()->indices()->getSettings(array('index' => 'toppings'))['toppings']['settings']['index'];
 		$this->assertEquals(
-			$this->settings[static::PIZZA_TRAIT_INDEX]['analysis'],
+			$this->settings['toppings']['analysis'],
 			$settings['analysis']
 		);
 	}
