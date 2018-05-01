@@ -6,11 +6,6 @@ use \Zumba\PHPUnit\Extensions\ElasticSearch\Client\Connector;
 class DataSet {
 
 	/**
-	 * Max retries / waiting time for indexing
-	 */
-	const MAX_RETRY = 30;
-
-	/**
 	 * Fixture data.
 	 *
 	 * [index name] => [type name] => [][data]
@@ -52,6 +47,13 @@ class DataSet {
 	protected $retryWait = 100;
 
 	/**
+	 * Maximum time to wait for indexing to complete, in seconds.
+	 *
+	 * @var integer
+	 */
+	protected $indexTimeout = 3;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Zumba\PHPUnit\Extensions\ElasticSearch\Client\Connector
@@ -70,6 +72,17 @@ class DataSet {
 	 */
 	public function setFixture(array $data) {
 		$this->fixture = $data;
+		return $this;
+	}
+
+	/**
+	 * Sets the timeout for indexing completion.
+	 *
+	 * @param integer $timeout timeout, in seconds
+	 * @return Zumba\PHPUnit\Extensions\ElasticSearch\DataSet\DataSet
+	 */
+	public function setIndexTimeout($timeout) {
+		$this->indexTimeout = $timeout;
 		return $this;
 	}
 
@@ -173,14 +186,13 @@ class DataSet {
 				if (empty($count)) {
 					continue;
 				}
-				$retries = 1;
+				$start = microtime(true);
 				do {
-					if ($retries == static::MAX_RETRY) {
+					if (microtime(true) - $start > $this->indexTimeout) {
 						throw new \RuntimeException("Indexing time out for Elastic Search Fixture");
 					}
 					usleep($this->retryWait * 1000);
 					$response = $this->connection->getConnection()->indices()->stats(compact('index'));
-					$retries++;
 				} while ($response['indices'][$index]['total']['docs']['count'] != $documents[$index]);
 			}
 		}
